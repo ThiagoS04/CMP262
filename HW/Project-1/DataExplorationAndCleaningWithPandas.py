@@ -20,10 +20,7 @@ except:
     # Tell user file not found
     print("File not found")
 
-# %%
-# Print the first 5 rows of the data from entry survey
-print("First 5 rows of data from entry survey:")
-csEntry_df.head()
+
 
 # %%
 # Print the data from literacy survey
@@ -51,7 +48,7 @@ cleaned_df = pd.DataFrame()
 
 # Remove NaN from old datasets
 csLiteracy_df = csLiteracy_df.dropna()
-csEntry_df = csEntry_df.dropna()
+
 
 
 # %%
@@ -330,7 +327,7 @@ noChart = plt.pie(countsNoImpact.values(), labels=countsNoImpact.keys(), autopct
 noChart = plt.title("No Impact")
 noChart = plt.axis('equal')
 
-# Show pie chart
+# Show pie charts
 decisionImpact = plt.show()
 
 
