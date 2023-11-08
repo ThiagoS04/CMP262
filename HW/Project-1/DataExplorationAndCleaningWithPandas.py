@@ -11,7 +11,6 @@ pd.__version__
 
 # Read in the data and save as variable
 try:
-    csEntry_df = pd.read_csv('CCMComputingEntrySurvey-Fall2022.csv')
     csLiteracy_df = pd.read_csv('CCMComputingLiteracyCourseEntrySurvey-Fall2022.csv')
 
     # Tell user file successfully readS
@@ -251,7 +250,7 @@ cleaned_df.head()
 cleaned_df.to_csv('CCMComputingLiteracySurvey-Fall2022-Cleaned.csv', index=False)
 
 # %%
-## Create pie chart of how people heard about CCM
+## Create bar chart of how people heard about CCM
 
 # Create dictionary of how people heard about CCM
 counts = {}
@@ -264,16 +263,43 @@ for i, row in cleaned_df.iterrows():
         else:
             counts[response] = 1
 
-# Create pie chart of how people heard about CCM
-findOut = plt.pie(counts.values(), labels=counts.keys(), autopct='%1.1f%%', shadow=True, startangle=90)
+# Create int of total responses
+totalResponses = 0
+for response in counts:
+    totalResponses += counts[response]
+
+# Create "other" in counts
+counts["Other"] = 0
+
+# Create list of responses to remove
+remove = []
+
+# Loop through each response in counts to clean up any response with less than 3%
+for response in counts:
+    
+    # Check if response does not have enough responses
+    if counts[response] < (3/100 * totalResponses) and response != "Other":
+        
+        # Add response count to "other" category and add response to remove list
+        counts["Other"] += counts[response]
+        remove.append(response)
+        
+# Remove responses
+for response in remove:
+    del counts[response]
+
+# Create bar chart of how people heard about CCM
+findOut = plt.figure(figsize=(12,6))
+findOut = plt.bar(counts.keys(), counts.values())
+findOut = plt.xlabel("Ways people find out about CCM")
 findOut = plt.title("How did you hear about CCM?")
-findOut = plt.axis('equal')
+findOut = plt.xticks(rotation = 45)
 findOut = plt.show()
 
 
 
 # %%
-## Create pie chart of what impacted people's decision to attend CCM
+## Create bar charts of what impacted people's decision to attend CCM based on impact level
 
 # Create dictionaries of what impacted people's decision to attend CCM based on impact level
 countsHighImpact = {}
@@ -311,26 +337,62 @@ for i, row in cleaned_df.iterrows():
         else:
             countsNoImpact[response] = 1
 
-# Create pie chart with 3 subplots of what impacted people's decision to attend CCM based on impact level
-decisionImpact = plt.figure(figsize=(20, 10))
+# Create int of total responses per impact level
+# High impact
+totalHighImpact = 0
+for response in countsHighImpact:
+    totalHighImpact += countsHighImpact[response]
+
+# Some impact
+totalSomeImpact = 0
+for response in countsSomeImpact:
+    totalSomeImpact += countsSomeImpact[response]
+
+# No impact
+totalNoImpact = 0
+for response in countsNoImpact:
+    totalNoImpact += countsNoImpact[response]
+
+# Create "other" in counts per impact level and add any response with less than 6% to other
+# High impact
+countsHighImpact["Other"] = 0
+for response in countsHighImpact:
+    if response != "Other" and countsHighImpact[response] < (6/100 * totalHighImpact):
+        countsHighImpact["Other"] += countsHighImpact[response]
+
+# Some impact
+countsSomeImpact["Other"] = 0
+for response in countsSomeImpact:
+    if response != "Other" and countsSomeImpact[response] < (6/100 * totalSomeImpact):
+        countsSomeImpact["Other"] += countsSomeImpact[response]
+
+# No impact
+countsNoImpact["Other"] = 0
+for response in countsNoImpact:
+    if response != "Other" and countsNoImpact[response] < (6/100 * totalNoImpact):
+        countsNoImpact["Other"] += countsNoImpact[response]
+
+# Create bar chart with 3 subplots of what impacted people's decision to attend CCM based on impact level
+decisionImpact = plt.figure(figsize=(15, 35))
+
 
 # High Impact
-highChart = decisionImpact.add_subplot(1, 3, 1)
-highChart = plt.pie(countsHighImpact.values(), labels=countsHighImpact.keys(), autopct='%1.1f%%', shadow=True, startangle=90)
+highChart = decisionImpact.add_subplot(3, 1, 1)
+highChart = plt.barh(list(countsHighImpact.keys()), countsHighImpact.values())
 highChart = plt.title("High Impact")
-highChart = plt.axis('equal')
+highChart = plt.yticks(fontsize = 18)
 
 # Some Impact
-someChart = decisionImpact.add_subplot(1, 3, 2)
-someChart = plt.pie(countsSomeImpact.values(), labels=countsSomeImpact.keys(), autopct='%1.1f%%', shadow=True, startangle=90)
+someChart = decisionImpact.add_subplot(3, 1, 2)
+someChart = plt.barh(list(countsSomeImpact.keys()), countsSomeImpact.values())
 someChart = plt.title("Some Impact")
-someChart = plt.axis('equal')
+someChart = plt.yticks(fontsize = 18)
 
 # No Impact
-noChart = decisionImpact.add_subplot(1, 3, 3)
-noChart = plt.pie(countsNoImpact.values(), labels=countsNoImpact.keys(), autopct='%1.1f%%', shadow=True, startangle=90)
+noChart = decisionImpact.add_subplot(3, 1, 3)
+noChart = plt.barh(list(countsNoImpact.keys()), countsNoImpact.values())
 noChart = plt.title("No Impact")
-noChart = plt.axis('equal')
+noChart = plt.yticks(fontsize = 18)
 
 # Show pie charts
 decisionImpact = plt.show()
@@ -399,8 +461,10 @@ for i, row in cleaned_df.iterrows():
         else:
             counts[response] = 1
 
-# Create pie chart of classes participants are interested in
-classInterestChart = plt.pie(counts.values(), labels=counts.keys(), autopct='%1.1f%%', shadow=True, startangle=90)
-classInterestChart = plt.title("Interested Classes")
-classInterestChart = plt.axis('equal')
+# Create bar chart of classes participants are interested in
+classInterestChart = plt.figure(figsize=(15, 5))
+classInterestChart = plt.bar(counts.keys(), counts.values())
+classInterestChart = plt.title("Interest in taking other computer science classes")
+classInterestChart = plt.xlabel("Classes")
+classInterestChart = plt.xticks(rotation = 45)
 classInterestChart = plt.show()
