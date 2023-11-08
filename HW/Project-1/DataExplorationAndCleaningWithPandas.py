@@ -244,6 +244,11 @@ cleaned_df["What motivated you to seek a computing class at CCM"] = combined_res
 cleaned_df.head()
 
 
+# %%
+## Create new cleaned csv file
+
+# Create new csv file with cleaned data
+cleaned_df.to_csv('CCMComputingLiteracySurvey-Fall2022-Cleaned.csv', index=False)
 
 # %%
 ## Create pie chart of how people heard about CCM
